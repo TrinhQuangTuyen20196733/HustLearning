@@ -9,14 +9,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnswerDTO {
+public class VocabularyDTO {
+    private long id;
 
     private String content;
-
-    private boolean isCorrect;
 
     private String imageLocation;
 
     private  String videoLocation;
+
+    private  long topic_id;
 
 }

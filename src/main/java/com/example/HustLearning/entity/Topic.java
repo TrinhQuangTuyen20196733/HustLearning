@@ -1,5 +1,6 @@
 package com.example.HustLearning.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,18 +13,30 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "topic")
 @Entity
+@AttributeOverride(name = "id", column = @Column(name = "topic_id"))
 public class Topic extends BaseEntity{
+
+    @Column(name = "content")
     private String content;
 
+    @Column(name = "image_location")
     private String imageLocation;
 
+    @Column(name = "video_location")
     private  String videoLocation;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "topic",cascade = CascadeType.PERSIST)
+    @JsonIgnore
+    @OneToMany(mappedBy = "topic",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
     private List<Vocabulary> vocabularies;
 
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "vocab_id")
+    @JsonIgnore
+    @OneToMany(mappedBy = "topic",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
     private List<Question> questions;
 
 }

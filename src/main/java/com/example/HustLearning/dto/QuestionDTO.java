@@ -1,28 +1,28 @@
-package com.example.HustLearning.entity;
+package com.example.HustLearning.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "question")
-@Entity
-public class Question extends BaseEntity {
+public class QuestionDTO {
 
     private String content;
-
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "question",cascade = CascadeType.PERSIST)
-    private List<Answer> answers;
 
     private String explain;
 
     private String imageLocation;
 
     private  String videoLocation;
+
+    private long topic_id;
+
+    private List<AnswerDTO> answerDTOS;
 
 }

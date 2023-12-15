@@ -17,6 +17,7 @@ import java.util.Date;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -37,4 +38,5 @@ public class BaseEntity {
     @Column(name = "modified_by")
     @LastModifiedDate
     private String editor;
+
 }
