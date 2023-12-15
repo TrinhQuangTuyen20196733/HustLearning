@@ -8,6 +8,7 @@ import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TopicMapper implements Mapper<Topic, TopicDTO> {
@@ -28,12 +29,12 @@ public class TopicMapper implements Mapper<Topic, TopicDTO> {
 
     @Override
     public List<TopicDTO> toDTOList(List<Topic> entityList) {
-        return null;
+        return entityList.stream().map(entity->toDTO(entity)).collect(Collectors.toList());
     }
 
     @Override
     public List<Topic> toEntityList(List<TopicDTO> dtoList) {
-        return null;
+        return dtoList.stream().map(dto->toEntity(dto)).collect(Collectors.toList());
     }
 
 }

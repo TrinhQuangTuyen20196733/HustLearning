@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "question")
+@ToString(exclude = {"topic", "answers"})
 @Entity
 @AttributeOverride(name = "id", column = @Column(name = "question_id"))
 public class Question extends BaseEntity {
@@ -32,7 +34,8 @@ public class Question extends BaseEntity {
     @OneToMany(mappedBy = "question",
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
+                    CascadeType.DETACH, CascadeType.REFRESH,
+                    CascadeType.REMOVE})
     private List<Answer> answers;
 
     @JsonIgnore

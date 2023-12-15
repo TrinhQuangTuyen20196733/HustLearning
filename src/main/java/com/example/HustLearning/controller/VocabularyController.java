@@ -28,11 +28,6 @@ public class VocabularyController {
         if (topicService.getTopicById(topicId) != null) {
             List<Vocabulary> vocabularies = vocabularySerivce.getVocabulariesByTopicId(topicId);
 
-            for (Vocabulary vocabulary :
-                    vocabularies) {
-                System.out.println(vocabulary.toString());
-            }
-
             List<VocabularyDTO> vocabularyDTOS = vocabularyMapper.toDTOList(vocabularies);
             return vocabularyDTOS;
         }
@@ -40,27 +35,26 @@ public class VocabularyController {
         return null;
     }
 
-    @DeleteMapping("/vocabulary/{id}")
-    public MessagesResponse deleteVocabularyById(@PathVariable("id") long id) {
-
-        if (vocabularySerivce.getVocabularyById(id) != null) {
-            vocabularySerivce.deleteVocabularyById(id);
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Deleted successfully!").data(vocabularySerivce.getVocabularyById(id)).build();
-        }
-
-        return MessagesResponse.builder().code(HttpStatus.NOT_FOUND.value()).message("Deletion failed with vocabulary id: " + id).data(null).build();
-    }
-
     @PostMapping("/vocabulary")
     public MessagesResponse addVocabulary(@RequestBody @Valid VocabularyDTO vocabularyDTO) {
         Vocabulary vocabulary = vocabularyMapper.toEntity(vocabularyDTO);
-
-        System.out.println(vocabulary);
 
         if (vocabularySerivce.addAndReturnVocabulary(vocabulary) !=null) {
             return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Saved successfully!").data(vocabularyDTO).build();
         }
 
         return MessagesResponse.builder().code(HttpStatus.BAD_REQUEST.value()).message("Could not add a vocabulary").data(vocabularyDTO).build();
+    }
+
+    @DeleteMapping("/vocabulary/{id}")
+    public MessagesResponse deleteVocabularyById(@PathVariable("id") long id) {
+
+        if (vocabularySerivce.getVocabularyById(id) != null) {
+            Vocabulary vocabulary = vocabularySerivce.deleteVocabularyById(id);
+            VocabularyDTO vocabularyDTO = vocabularyMapper.toDTO(vocabulary);
+            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Deleted successfully!").data(vocabularyDTO).build();
+        }
+
+        return MessagesResponse.builder().code(HttpStatus.NOT_FOUND.value()).message("Deletion failed with vocabulary id: " + id).data(null).build();
     }
 }

@@ -38,6 +38,11 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    public Topic addAndReturnTopic(Topic topic) {
+        return topicRepository.save(topic);
+    }
+
+    @Override
     public Topic deleteTopicById(long id) {
         Optional<Topic> optionalTopic = topicRepository.findById(id);
 

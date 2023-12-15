@@ -1,5 +1,6 @@
 package com.example.HustLearning.service.Impl;
 
+import com.example.HustLearning.entity.Answer;
 import com.example.HustLearning.entity.Question;
 import com.example.HustLearning.repository.QuestionRepository;
 import com.example.HustLearning.repository.TopicRepository;
@@ -36,6 +37,23 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void addQuestion(Question question) {
         questionRepository.save(question);
+    }
+
+    @Override
+    public Question addAndReturnQuestion(Question question) {
+        return questionRepository.save(question);
+    }
+
+    @Override
+    public Question addQuestionAndAnswers(Question question) {
+        List<Answer> answers = question.getAnswers();
+
+        for (Answer answer :
+                answers) {
+            answer.setQuestion(question);
+        }
+
+        return questionRepository.save(question);
     }
 
     @Override

@@ -12,10 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionDTO {
+    private long id;
 
     private String content;
 
-    private String explain;
+    private String explanation;
 
     private String imageLocation;
 

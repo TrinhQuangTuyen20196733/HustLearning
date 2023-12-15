@@ -12,7 +12,12 @@ public interface QuestionService {
 
     void addQuestion(Question question);
 
+    Question addAndReturnQuestion(Question question);
+
+    Question addQuestionAndAnswers(Question question);
+
     Question deleteQuestionById(long id);
 
     List<Question> getQuestionsByTopicId(long topicId);
+
 }

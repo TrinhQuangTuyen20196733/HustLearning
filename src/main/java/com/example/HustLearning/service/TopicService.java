@@ -12,5 +12,7 @@ public interface TopicService {
 
     void addTopic(Topic topic);
 
+    Topic addAndReturnTopic(Topic topic);
+
     Topic deleteTopicById(long id);
 }
