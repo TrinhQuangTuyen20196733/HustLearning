@@ -15,38 +15,44 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/learning")
+@RequestMapping("/vocabularies")
 public class VocabularyController {
 
     private final VocabularySerivce vocabularySerivce;
     private final TopicService topicService;
     private final VocabularyMapper vocabularyMapper;
 
-    @GetMapping("/vocabularies/{topicId}")
-    public List<VocabularyDTO> getAllVocabularies(@PathVariable("topicId") long topicId) {
+    @GetMapping("/{topicId}")
+    public MessagesResponse getAllVocabularies(@PathVariable("topicId") long topicId) {
+        MessagesResponse ms = new MessagesResponse();
+        try {
+            if (topicService.getTopicById(topicId) != null) {
+                List<Vocabulary> vocabularies = vocabularySerivce.getVocabulariesByTopicId(topicId);
 
-        if (topicService.getTopicById(topicId) != null) {
-            List<Vocabulary> vocabularies = vocabularySerivce.getVocabulariesByTopicId(topicId);
+                List<VocabularyDTO> vocabularyDTOS = vocabularyMapper.toDTOList(vocabularies);
+                ms.data = vocabularyDTOS;
+            }
 
-            List<VocabularyDTO> vocabularyDTOS = vocabularyMapper.toDTOList(vocabularies);
-            return vocabularyDTOS;
+        } catch (Exception ex) {
+            ms.code = 404;
+            ms.message = ex.getMessage();
         }
 
-        return null;
+        return ms;
     }
 
-    @PostMapping("/vocabulary")
+    @PostMapping
     public MessagesResponse addVocabulary(@RequestBody @Valid VocabularyDTO vocabularyDTO) {
         Vocabulary vocabulary = vocabularyMapper.toEntity(vocabularyDTO);
 
-        if (vocabularySerivce.addAndReturnVocabulary(vocabulary) !=null) {
+        if (vocabularySerivce.addAndReturnVocabulary(vocabulary) != null) {
             return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Saved successfully!").data(vocabularyDTO).build();
         }
 
         return MessagesResponse.builder().code(HttpStatus.BAD_REQUEST.value()).message("Could not add a vocabulary").data(vocabularyDTO).build();
     }
 
-    @DeleteMapping("/vocabulary/{id}")
+    @DeleteMapping("/{id}")
     public MessagesResponse deleteVocabularyById(@PathVariable("id") long id) {
 
         if (vocabularySerivce.getVocabularyById(id) != null) {

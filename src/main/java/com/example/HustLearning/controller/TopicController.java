@@ -27,7 +27,7 @@ public class TopicController {
         return topicDTOS;
     }
 
-    @PostMapping("/topic")
+    @PostMapping
     public MessagesResponse addTopic(@RequestBody @Valid TopicDTO topicDTO) {
         Topic topic = topicMapper.toEntity(topicDTO);
 

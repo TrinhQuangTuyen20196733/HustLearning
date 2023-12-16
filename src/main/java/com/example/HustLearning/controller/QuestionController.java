@@ -17,26 +17,32 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/learning")
+@RequestMapping("/questions")
 public class QuestionController {
 
     private final QuestionService questionService;
     private final TopicService topicService;
     private final QuestionMapper questionMapper;
 
-    @GetMapping("/questions/{topicId}")
-    public List<QuestionDTO> getAllQuestion(@PathVariable("topicId") long topicId) {
-
-        if (topicService.getTopicById(topicId) != null) {
-            List<Question> questions = questionService.getQuestionsByTopicId(topicId);
-            List<QuestionDTO> questionDTOS = questionMapper.toDTOList(questions);
-            return questionDTOS;
+    @GetMapping("/{topicId}")
+    public MessagesResponse getAllQuestion(@PathVariable("topicId") long topicId) {
+        MessagesResponse ms = new MessagesResponse();
+        try {
+            if (topicService.getTopicById(topicId) != null) {
+                List<Question> questions = questionService.getQuestionsByTopicId(topicId);
+                List<QuestionDTO> questionDTOS = questionMapper.toDTOList(questions);
+                ms.data = questionDTOS;
+            }
+        } catch (Exception ex) {
+            ms.code = 404;
+            ms.message = ex.getMessage();
         }
 
-        return null;
+
+        return ms;
     }
 
-    @PostMapping("/question")
+    @PostMapping
     public MessagesResponse addQuestion(@RequestBody @Valid QuestionDTO questionDTO) {
         Question question = questionMapper.toEntity(questionDTO);
 
@@ -47,15 +53,15 @@ public class QuestionController {
         return MessagesResponse.builder().code(HttpStatus.BAD_REQUEST.value()).message("Updated error!").data(questionDTO).build();
     }
 
-    @DeleteMapping("question/{id}")
-    public MessagesResponse deleteQuestion(@PathVariable long id){
+    @DeleteMapping("/{id}")
+    public MessagesResponse deleteQuestion(@PathVariable long id) {
         if (questionService.getQuestionById(id) != null) {
             Question question = questionService.deleteQuestionById(id);
             QuestionDTO questionDTO = questionMapper.toDTO(question);
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Deleted successfully!: "+id).data(questionDTO).build();
+            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Deleted successfully!: " + id).data(questionDTO).build();
         }
 
-        return MessagesResponse.builder().code(HttpStatus.NOT_FOUND.value()).message("Deletion failed with question id: "+id).build();
+        return MessagesResponse.builder().code(HttpStatus.NOT_FOUND.value()).message("Deletion failed with question id: " + id).build();
 
     }
 }
