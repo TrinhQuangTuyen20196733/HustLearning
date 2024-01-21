@@ -1,11 +1,13 @@
 package com.example.HustLearning.controller;
 
 
-import com.example.HustLearning.dto.QuestionDTO;
+import com.example.HustLearning.constant.HTTPCode;
+import com.example.HustLearning.dto.request.QuestionReq;
+import com.example.HustLearning.dto.request.QuestionSearchParam;
 import com.example.HustLearning.dto.response.MessagesResponse;
-import com.example.HustLearning.entity.Answer;
+import com.example.HustLearning.dto.response.QuestionRes;
 import com.example.HustLearning.entity.Question;
-import com.example.HustLearning.mapper.Impl.QuestionMapper;
+import com.example.HustLearning.mapper.Impl.QuestionMapperImpl;
 import com.example.HustLearning.service.QuestionService;
 import com.example.HustLearning.service.TopicService;
 import jakarta.validation.Valid;
@@ -21,47 +23,54 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
-    private final TopicService topicService;
-    private final QuestionMapper questionMapper;
 
-    @GetMapping("/{topicId}")
-    public MessagesResponse getAllQuestion(@PathVariable("topicId") long topicId) {
-        MessagesResponse ms = new MessagesResponse();
-        try {
-            if (topicService.getTopicById(topicId) != null) {
-                List<Question> questions = questionService.getQuestionsByTopicId(topicId);
-                List<QuestionDTO> questionDTOS = questionMapper.toDTOList(questions);
-                ms.data = questionDTOS;
-            }
-        } catch (Exception ex) {
-            ms.code = 404;
-            ms.message = ex.getMessage();
-        }
-
-
-        return ms;
-    }
+//    @GetMapping("/{topicId}")
+//    public MessagesResponse getAllQuestion(@PathVariable("topicId") long topicId) {
+//        MessagesResponse ms = new MessagesResponse();
+//        try {
+//            ms.data = questionService.getQuestionsByTopicId(topicId);
+//        } catch (Exception ex) {
+//            ms.code = 404;
+//            ms.message = ex.getMessage();
+//        }
+//
+//
+//        return ms;
+//    }
 
     @PostMapping
-    public MessagesResponse addQuestion(@RequestBody @Valid QuestionDTO questionDTO) {
-        Question question = questionMapper.toEntity(questionDTO);
-
-        if (questionService.addQuestionAndAnswers(question) != null) {
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Saved successfully!").data(questionDTO).build();
+    public MessagesResponse addQuestion(@RequestBody @Valid QuestionReq questionReq) {
+        MessagesResponse ms = new MessagesResponse();
+        try {
+             questionService.addQuestion(questionReq);
+        } catch (Exception ex) {
+            ms.code = HTTPCode.INTERAL_SERVER_ERROR;
+            ms.message = ex.getMessage();
         }
-
-        return MessagesResponse.builder().code(HttpStatus.BAD_REQUEST.value()).message("Updated error!").data(questionDTO).build();
+        return ms;
+    }
+    @PostMapping("/get-by-topic")
+    public MessagesResponse getByTopic(@RequestBody @Valid QuestionSearchParam searchParam) {
+        MessagesResponse ms = new MessagesResponse();
+        try {
+            ms.data=questionService.searchQuestion(searchParam);
+        } catch (Exception ex) {
+            ms.code = HTTPCode.INTERAL_SERVER_ERROR;
+            ms.message = ex.getMessage();
+        }
+        return ms;
     }
 
     @DeleteMapping("/{id}")
     public MessagesResponse deleteQuestion(@PathVariable long id) {
-        if (questionService.getQuestionById(id) != null) {
-            Question question = questionService.deleteQuestionById(id);
-            QuestionDTO questionDTO = questionMapper.toDTO(question);
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Deleted successfully!: " + id).data(questionDTO).build();
+        MessagesResponse ms = new MessagesResponse();
+        try {
+            questionService.deleteQuestionById(id);
         }
-
-        return MessagesResponse.builder().code(HttpStatus.NOT_FOUND.value()).message("Deletion failed with question id: " + id).build();
-
+        catch (Exception ex) {
+            ms.code = HTTPCode.INTERAL_SERVER_ERROR;
+            ms.message = ex.getMessage();
+        }
+        return  ms;
     }
 }

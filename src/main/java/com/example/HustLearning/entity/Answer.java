@@ -19,20 +19,18 @@ public class Answer extends BaseEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "image_location")
+    @Column(name = "image_location",length = 2000)
     private String imageLocation;
 
-    @Column(name = "video_location")
-    private  String videoLocation;
+    @Column(name = "video_location",length = 2000)
+    private String videoLocation;
 
     @Column(name = "is_correct")
     private boolean isCorrect;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name="question_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST},fetch = FetchType.EAGER)
+    @JoinColumn(name = "question_id")
     private Question question;
 
 }

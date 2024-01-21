@@ -1,9 +1,15 @@
 package com.example.HustLearning.controller;
 
-import com.example.HustLearning.dto.VocabularyDTO;
+import com.example.HustLearning.constant.ExceptionConstant;
+import com.example.HustLearning.constant.HTTPCode;
+import com.example.HustLearning.dto.PageDTO;
+import com.example.HustLearning.dto.request.SearchParamReq;
+import com.example.HustLearning.dto.request.VocabReq;
+import com.example.HustLearning.dto.response.TopicRes;
+import com.example.HustLearning.dto.response.VocabRes;
 import com.example.HustLearning.dto.response.MessagesResponse;
 import com.example.HustLearning.entity.Vocabulary;
-import com.example.HustLearning.mapper.Impl.VocabularyMapper;
+import com.example.HustLearning.mapper.Impl.VocabularyMapperImpl;
 import com.example.HustLearning.service.TopicService;
 import com.example.HustLearning.service.VocabularySerivce;
 import jakarta.validation.Valid;
@@ -18,23 +24,17 @@ import java.util.List;
 @RequestMapping("/vocabularies")
 public class VocabularyController {
 
-    private final VocabularySerivce vocabularySerivce;
-    private final TopicService topicService;
-    private final VocabularyMapper vocabularyMapper;
+    private final VocabularySerivce vocabularyService;
+
 
     @GetMapping("/{topicId}")
     public MessagesResponse getAllVocabularies(@PathVariable("topicId") long topicId) {
         MessagesResponse ms = new MessagesResponse();
         try {
-            if (topicService.getTopicById(topicId) != null) {
-                List<Vocabulary> vocabularies = vocabularySerivce.getVocabulariesByTopicId(topicId);
-
-                List<VocabularyDTO> vocabularyDTOS = vocabularyMapper.toDTOList(vocabularies);
-                ms.data = vocabularyDTOS;
-            }
+            ms.data = vocabularyService.getVocabulariesByTopicId(topicId);
 
         } catch (Exception ex) {
-            ms.code = 404;
+            ms.code = HTTPCode.RESOURCE_NOT_FOUND;
             ms.message = ex.getMessage();
         }
 
@@ -42,25 +42,33 @@ public class VocabularyController {
     }
 
     @PostMapping
-    public MessagesResponse addVocabulary(@RequestBody @Valid VocabularyDTO vocabularyDTO) {
-        Vocabulary vocabulary = vocabularyMapper.toEntity(vocabularyDTO);
-
-        if (vocabularySerivce.addAndReturnVocabulary(vocabulary) != null) {
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Saved successfully!").data(vocabularyDTO).build();
+    public MessagesResponse addVocabulary(@RequestBody @Valid VocabReq vocabularyDTO) {
+        MessagesResponse ms = new MessagesResponse();
+        try {
+            vocabularyService.addVocabulary(vocabularyDTO);
+        } catch (Exception ex) {
+            ms.code = HTTPCode.INTERAL_SERVER_ERROR;
+            ms.message = ex.getMessage();
         }
-
-        return MessagesResponse.builder().code(HttpStatus.BAD_REQUEST.value()).message("Could not add a vocabulary").data(vocabularyDTO).build();
+        return ms;
     }
 
     @DeleteMapping("/{id}")
     public MessagesResponse deleteVocabularyById(@PathVariable("id") long id) {
 
-        if (vocabularySerivce.getVocabularyById(id) != null) {
-            Vocabulary vocabulary = vocabularySerivce.deleteVocabularyById(id);
-            VocabularyDTO vocabularyDTO = vocabularyMapper.toDTO(vocabulary);
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Deleted successfully!").data(vocabularyDTO).build();
-        }
+        MessagesResponse ms = new MessagesResponse();
+        try {
+            vocabularyService.deleteById(id);
+        } catch (Exception ex) {
+            ms.code = HTTPCode.INTERAL_SERVER_ERROR;
+            ms.message = ex.getMessage();
 
-        return MessagesResponse.builder().code(HttpStatus.NOT_FOUND.value()).message("Deletion failed with vocabulary id: " + id).data(null).build();
+        }
+        return ms;
+    }
+
+    @PostMapping("/api/search")
+    public PageDTO<VocabRes> GetLists(@RequestBody SearchParamReq searchParamReq){
+        return  vocabularyService.search(searchParamReq);
     }
 }

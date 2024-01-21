@@ -2,42 +2,38 @@ package com.example.HustLearning;
 
 import com.example.HustLearning.entity.Answer;
 import com.example.HustLearning.service.AnswerService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.List;
 
 @SpringBootApplication
+@EnableAsync
+@OpenAPIDefinition(
+		info = @Info(
+				title = "Hust Learning API",
+				version = "1.0.0",
+				description = "Building Hust Learning platform",
+				contact = @Contact(
+						name = "Trịnh Quang Tuyến",
+						email = "tuyen.tq196733@sis.hust.edu.vn"
+				)
+		)
+)
 public class HustLearningApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(HustLearningApplication.class, args);
 	}
 
-	@Bean
-	public CommandLineRunner commandLineRunner(AnswerService answerService) {
-		return runner -> {
-//			System.out.println(answerService.getAnswerById(1).getQuestion().getId());
-
-//			List<Answer> answers = answerService.getAllAnswer();
-//
-//			for (Answer answer :
-//					answers) {
-//				System.out.println(answer.toString());
-//			}
-
-//			System.out.println("Answer: " + answerService.getAnswerById(-1));
-
-//			List<Answer> answers = answerService.getAnswersByQuestionId(1);
-//
-//			for (Answer answer:
-//				 answers) {
-//				System.out.println(answer);
-//			}
-		};
 
 
-	}
+
 }

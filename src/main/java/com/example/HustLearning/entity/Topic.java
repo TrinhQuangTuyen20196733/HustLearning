@@ -21,10 +21,10 @@ public class Topic extends BaseEntity{
     @Column(name = "content")
     private String content;
 
-    @Column(name = "image_location")
+    @Column(name = "image_location",length = 2000)
     private String imageLocation;
 
-    @Column(name = "video_location")
+    @Column(name = "video_location",length = 2000)
     private  String videoLocation;
 
     @JsonIgnore

@@ -1,52 +1,70 @@
 package com.example.HustLearning.controller;
 
-import com.example.HustLearning.dto.TopicDTO;
+import com.example.HustLearning.constant.ExceptionConstant;
+import com.example.HustLearning.constant.HTTPCode;
+import com.example.HustLearning.dto.PageDTO;
+import com.example.HustLearning.dto.request.SearchParamReq;
+import com.example.HustLearning.dto.request.TopicReq;
 import com.example.HustLearning.dto.response.MessagesResponse;
+import com.example.HustLearning.dto.response.TopicRes;
 import com.example.HustLearning.entity.Topic;
-import com.example.HustLearning.mapper.Impl.TopicMapper;
+import com.example.HustLearning.mapper.Impl.TopicMapperImpl;
 import com.example.HustLearning.service.TopicService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/learning")
+@RequestMapping("topics")
 public class TopicController {
     private final TopicService topicService;
-    private final TopicMapper topicMapper;
+    private final TopicMapperImpl topicMapper;
 
-    @GetMapping("/topics")
-    public List<TopicDTO> getAllTopic(){
-        List<Topic> topics = topicService.getAllTopic();
-        List<TopicDTO> topicDTOS = topicMapper.toDTOList(topics);
-
-        return topicDTOS;
+    @GetMapping
+    public MessagesResponse getAllTopic() {
+        MessagesResponse ms = new MessagesResponse();
+        try {
+            ms.data = topicService.getAllTopic();
+        } catch (Exception ex) {
+            ms.code = HTTPCode.RESOURCE_NOT_FOUND;
+            ms.message = ex.getMessage();
+        }
+        return ms;
     }
 
     @PostMapping
-    public MessagesResponse addTopic(@RequestBody @Valid TopicDTO topicDTO) {
-        Topic topic = topicMapper.toEntity(topicDTO);
+    public MessagesResponse addTopic(@RequestBody @Valid TopicReq topicReq) {
+        MessagesResponse ms = new MessagesResponse();
 
-        if (topicService.addAndReturnTopic(topic) !=null) {
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Saved successfully!").data(topicDTO).build();
+        try {
+            topicService.addTopic(topicReq);
+        } catch (Exception ex) {
+            ms.code = HTTPCode.INTERAL_SERVER_ERROR;
+            ms.message = ExceptionConstant.INTERNAL_SERVER_ERROR;
         }
 
-        return MessagesResponse.builder().code(HttpStatus.BAD_REQUEST.value()).message("Could not add a vocabulary").data(topicDTO).build();
+
+        return ms;
     }
 
     @DeleteMapping("/topic/{id}")
     public MessagesResponse deleteTopic(@PathVariable("id") long id) {
-        if (topicService.getTopicById(id) != null) {
-            Topic topic = topicService.deleteTopicById(id);
-            TopicDTO topicDTO = topicMapper.toDTO(topic);
-            return MessagesResponse.builder().code(HttpStatus.OK.value()).message("Deleted successfully!").data(topicDTO).build();
+        MessagesResponse ms = new MessagesResponse();
+
+        try {
+            topicService.deleteTopicById(id);
+        } catch (Exception ex) {
+            ms.code = HTTPCode.INTERAL_SERVER_ERROR;
+            ms.message = ExceptionConstant.INTERNAL_SERVER_ERROR;
         }
 
-        return MessagesResponse.builder().code(HttpStatus.NOT_FOUND.value()).message("Deletion failed with topic id: " + id).data(null).build();
+        return ms;
+    }
+
+    @PostMapping("/api/search")
+    public PageDTO<TopicRes> GetLists(@RequestBody SearchParamReq searchParamReq){
+        return  topicService.search(searchParamReq);
     }
 
 }

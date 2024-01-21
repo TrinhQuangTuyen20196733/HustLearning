@@ -1,79 +1,55 @@
 package com.example.HustLearning.service.Impl;
 
-import com.example.HustLearning.entity.Answer;
+import com.example.HustLearning.dto.request.QuestionReq;
+import com.example.HustLearning.dto.request.QuestionSearchParam;
+import com.example.HustLearning.dto.response.QuestionRes;
 import com.example.HustLearning.entity.Question;
+import com.example.HustLearning.mapper.QuestionMapper;
 import com.example.HustLearning.repository.QuestionRepository;
-import com.example.HustLearning.repository.TopicRepository;
 import com.example.HustLearning.service.QuestionService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
-    private final TopicRepository topicRepository;
+    @PersistenceContext
+    private final EntityManager entityManager;
+
+    private final QuestionMapper questionMapper;
+
 
     @Override
-    public List<Question> getAllQuestion() {
-        return questionRepository.findAll();
-    }
-
-    @Override
-    public Question getQuestionById(long id) {
-        Optional<Question> optionalQuestion = questionRepository.findById(id);
-
-        if (optionalQuestion.isPresent()) {
-            return optionalQuestion.get();
-        }
-
-        return null;
-    }
-
-    @Override
-    public void addQuestion(Question question) {
+    public void addQuestion(QuestionReq questionReq) {
+        Question question = questionMapper.toEntity(questionReq);
         questionRepository.save(question);
     }
 
+
     @Override
-    public Question addAndReturnQuestion(Question question) {
-        return questionRepository.save(question);
+    public void deleteQuestionById(long id) {
+        questionRepository.deleteById(id);
     }
 
     @Override
-    public Question addQuestionAndAnswers(Question question) {
-        List<Answer> answers = question.getAnswers();
-
-        for (Answer answer :
-                answers) {
-            answer.setQuestion(question);
-        }
-
-        return questionRepository.save(question);
+    public List<QuestionRes> getQuestionsByTopicId(long topicId) {
+        List<Question> questions = questionRepository.findQuestionsByTopicId(topicId).orElse(null);
+        return questionMapper.toDTOList(questions);
     }
 
     @Override
-    public Question deleteQuestionById(long id) {
-        Optional<Question>  optionalQuestion = questionRepository.findById(id);
+    public List<QuestionRes> searchQuestion(QuestionSearchParam searchParam) {
+        Pageable pageable = PageRequest.of(searchParam.page, searchParam.size);
 
-        if (optionalQuestion.isPresent()) {
-            questionRepository.deleteById(id);
-            return optionalQuestion.get();
-        }
-
-        return null;
-    }
-
-    @Override
-    public List<Question> getQuestionsByTopicId(long topicId) {
-        if (topicRepository.findById(topicId).isPresent()) {
-            return questionRepository.findQuestionsByTopicId(topicId);
-        }
-
-        return null;
+        List<Question> questions = questionRepository.findQuestionsByTopicId(searchParam.topicId).orElse(null);
+        return questionMapper.toDTOList(questions);
     }
 }

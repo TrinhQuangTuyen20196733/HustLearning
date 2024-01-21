@@ -1,4 +1,4 @@
-package com.example.HustLearning.dto;
+package com.example.HustLearning.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VocabularyDTO {
-    private long id;
+public class VocabReq{
 
     private String content;
 

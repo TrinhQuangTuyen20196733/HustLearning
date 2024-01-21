@@ -1,23 +1,21 @@
 package com.example.HustLearning.service;
 
+import com.example.HustLearning.dto.request.QuestionReq;
+import com.example.HustLearning.dto.request.QuestionSearchParam;
+import com.example.HustLearning.dto.response.QuestionRes;
 import com.example.HustLearning.entity.Question;
 
 import java.util.List;
 
 public interface QuestionService {
 
-    List<Question> getAllQuestion();
 
-    Question getQuestionById(long id);
+    void addQuestion(QuestionReq question);
 
-    void addQuestion(Question question);
 
-    Question addAndReturnQuestion(Question question);
+    void deleteQuestionById(long id);
 
-    Question addQuestionAndAnswers(Question question);
+    List<QuestionRes> getQuestionsByTopicId(long topicId);
 
-    Question deleteQuestionById(long id);
-
-    List<Question> getQuestionsByTopicId(long topicId);
-
+    List<QuestionRes> searchQuestion(QuestionSearchParam searchParam);
 }

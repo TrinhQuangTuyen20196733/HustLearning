@@ -21,28 +21,24 @@ public class Question extends BaseEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "explanation")
+    @Column(name = "explanation",length = 2000)
     private String explanation;
 
-    @Column(name = "image_location")
+    @Column(name = "image_location",length = 2000)
     private String imageLocation;
 
-    @Column(name = "video_location")
-    private  String videoLocation;
+    @Column(name = "video_location",length = 2000)
+    private String videoLocation;
 
     @JsonIgnore
     @OneToMany(mappedBy = "question",
-            fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH,
-                    CascadeType.REMOVE})
+            cascade = {CascadeType.PERSIST},
+            orphanRemoval = true,fetch = FetchType.EAGER)
     private List<Answer> answers;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name="topic_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "topic_id")
     private Topic topic;
 
 }
