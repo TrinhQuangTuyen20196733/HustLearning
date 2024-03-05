@@ -5,6 +5,7 @@ import com.example.HustLearning.dto.request.SearchParamReq;
 import com.example.HustLearning.dto.request.VocabReq;
 import com.example.HustLearning.dto.response.TopicRes;
 import com.example.HustLearning.dto.response.VocabRes;
+import com.example.HustLearning.entity.DataCollection;
 import com.example.HustLearning.entity.Topic;
 import com.example.HustLearning.entity.Vocabulary;
 import com.example.HustLearning.mapper.Impl.VocabularyMapperImpl;
@@ -18,6 +19,7 @@ import jakarta.persistence.PersistenceContextType;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -69,9 +71,17 @@ public class VocabularyServiceImpl implements VocabularySerivce {
         List<Predicate> predicates = new ArrayList<>();
 
         // Filter by text (if provided)
-        String searchText = "%" + searchParamReq.text + "%";
-        Predicate contentLike = criteriaBuilder.like(root.get("content"), searchText);
-        predicates.add(contentLike);
+        if (!ObjectUtils.isEmpty(searchParamReq.text)) {
+            String searchText = "%" + searchParamReq.text + "%";
+            Predicate contentLike = criteriaBuilder.like(root.get("content"), searchText);
+            predicates.add(contentLike);
+        }
+
+        if (searchParamReq.topicId !=0){
+            Join<Vocabulary, Topic> topicJoin = root.join("topic");
+            Predicate topicLike = criteriaBuilder.equal(topicJoin.get("id"), searchParamReq.topicId);
+            predicates.add(topicLike);
+        }
 
         // Filter by descending and orderBy (if provided)
         if (!ObjectUtils.isEmpty(searchParamReq.ascending) && !ObjectUtils.isEmpty(searchParamReq.orderBy)) {

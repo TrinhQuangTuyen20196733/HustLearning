@@ -9,12 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchParamReq {
-    public  int page =1 ;
-    public  int size =10;
-    public String text;
-    public  boolean ascending = false;
-    public String orderBy;
-
-    public long topicId;
+public class DataProvideReq {
+    private String dataLocation;
+    private int vocab_id;
 }

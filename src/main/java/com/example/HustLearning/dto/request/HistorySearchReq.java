@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
-public class SearchParamReq {
-    public  int page =1 ;
-    public  int size =10;
-    public String text;
-    public  boolean ascending = false;
-    public String orderBy;
-
-    public long topicId;
+public class HistorySearchReq {
+    boolean isApproved;
+    boolean isRejected;
 }

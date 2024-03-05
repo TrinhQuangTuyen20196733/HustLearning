@@ -7,7 +7,6 @@ import com.example.HustLearning.dto.request.SearchParamReq;
 import com.example.HustLearning.dto.request.TopicReq;
 import com.example.HustLearning.dto.response.MessagesResponse;
 import com.example.HustLearning.dto.response.TopicRes;
-import com.example.HustLearning.entity.Topic;
 import com.example.HustLearning.mapper.Impl.TopicMapperImpl;
 import com.example.HustLearning.service.TopicService;
 import jakarta.validation.Valid;
